@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +10,21 @@ public class MainSpawner : MonoBehaviour
 
     private void Start()
     {
-        InvokeRepeating(nameof(SpawnEnemy), 0.0f, _repeatRate);
+        SelectSpawnPoint();
+    }
+
+    private void SelectSpawnPoint()
+    {
+        StartCoroutine(DelayedLaunch());
+    }
+
+    private IEnumerator DelayedLaunch()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(_repeatRate);
+            SpawnEnemy();
+        }
     }
 
     private void SpawnEnemy()

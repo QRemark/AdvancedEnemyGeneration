@@ -27,6 +27,17 @@ public class EnemySpawner : MonoBehaviour
             );
     }
 
+    public void Spawn()
+    {
+        Enemy enemy = GetEnemy();
+        
+        enemy.transform.position = _startPoint.position;
+
+        enemy.ResetSpeed();
+
+        enemy.BeginPursuit( _target, _speed );
+    }
+
     private Enemy GetEnemy()
     {
         Enemy enemy = _enemyPool.Get();
@@ -36,27 +47,16 @@ public class EnemySpawner : MonoBehaviour
         return enemy;
     }
 
-    public void Spawn()
-    {
-        Enemy enemy = GetEnemy();
-        
-        enemy.transform.position = _startPoint.position;
-
-        enemy.ResetSpeed();
-
-        enemy.SetTarget( _target, _speed );
-    }
-
     private void SubscribeOnEnemy(Enemy enemy)
     {
         enemy.gameObject.SetActive(true);
-        enemy.EndWay += ReturnEnemyInPool;
+        enemy.Reached += ReturnEnemyInPool;
     }
 
     private void UnsubscribeOnEnemy(Enemy enemy)
     {
         enemy.gameObject.SetActive(false);
-        enemy.EndWay -= ReturnEnemyInPool;
+        enemy.Reached -= ReturnEnemyInPool;
     }
 
     private void ReturnEnemyInPool(Enemy enemy)

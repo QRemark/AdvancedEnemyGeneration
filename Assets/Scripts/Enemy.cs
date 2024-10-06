@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -7,19 +8,14 @@ public class Enemy : MonoBehaviour
     private Rigidbody _rigidbody;
     private Target _target;
 
-    private float _lifeWay = 30.0f;
+    private float _lifeWay = 15.0f;
     private float _speed;
 
-    public event Action<Enemy> EndWay;
+    public event Action<Enemy> Reached;
 
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
-    }
-
-    public void Init()
-    {
-        StartWay();
     }
 
     private void Update()
@@ -31,7 +27,12 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void SetTarget(Target target, float speed)
+    public void Init()
+    {
+        StartWay();
+    }
+
+    public void BeginPursuit(Target target, float speed)
     {
         _target = target;
         _speed = speed;
@@ -44,11 +45,17 @@ public class Enemy : MonoBehaviour
 
     private void StartWay()
     {
-        Invoke(nameof(NotifyWayEnd), _lifeWay);
+        StartCoroutine(Countdown());
     }
 
-    private void NotifyWayEnd()
+    private IEnumerator Countdown()
     {
-        EndWay?.Invoke(this);
+        yield return new WaitForSeconds(_lifeWay);
+        NotifyReached();
+    }
+
+    private void NotifyReached()
+    {
+        Reached?.Invoke(this);
     }
 }
